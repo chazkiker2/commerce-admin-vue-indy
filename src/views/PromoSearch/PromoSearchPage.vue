@@ -14,7 +14,7 @@
     import { useMq } from "vue3-mq";
 
     import PromoSearchDataTable from "./PromoSearchDataTable.vue";
-    import { AudienceTypeHelper, SolrDoc, Promotion, AudienceType } from "@/models";
+    import { SolrDoc, Promotion, AudienceType } from "@/models";
     import Client from "@/client";
     import { Routes } from "@/router/routes";
 

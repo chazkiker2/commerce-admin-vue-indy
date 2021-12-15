@@ -1,9 +1,7 @@
 import {
-    getPremiums,
     GetPremiumsParameters,
     getProductOffers,
     GetProductOffersParameters,
-    GetProductOffersResponseItem,
     listPromotions,
     ListPromotionsParameters,
     ListPromotionsResponse,
@@ -14,14 +12,7 @@ import { Controllers } from "@/constants";
 import { pick } from "./helpers";
 import { deserialize } from "typescript-json-serializer";
 import axios from "axios";
-import {
-    AudienceType,
-    CountryCode,
-    CountryCodeHelper,
-    ProductOffer,
-    SubscriptionProductOffer,
-} from "@/models";
-import { resolveComponent } from "vue";
+import { AudienceType, ProductOffer, SubscriptionProductOffer } from "@/models";
 import { Campaign } from "@/models/campaign";
 
 const { API_GATEWAY_KEY, API_GATEWAY_URL } = (window as any).env;
@@ -86,38 +77,6 @@ class CommerceAdminUrl {
 }
 
 class Client {
-    private async _request({ path, method, query, body }: RequestParameters): Promise<string> {
-        const bodyAsJsonString =
-            !body || Object.entries(body).length === 0 ? undefined : JSON.stringify(body);
-        const url = new CommerceAdminUrl(path);
-        if (query) {
-            for (const [key, value] of Object.entries(query)) {
-                if (value !== undefined) {
-                    url.searchParams.append(key, String(value));
-                }
-            }
-        }
-        const headers: Record<string, string> = {};
-        if (bodyAsJsonString !== undefined) {
-            headers["content-type"] = "application/json";
-        }
-        try {
-            const response = await fetch(url.toString(), {
-                method,
-                headers,
-                body: bodyAsJsonString,
-            });
-
-            const responseText = await response.text();
-            if (!response.ok) {
-                throw Error(responseText);
-            }
-
-            return Promise.resolve(responseText);
-        } catch (error: unknown) {
-            throw error;
-        }
-    }
     public async request<ResponseBody>(requestParams: RequestParameters): Promise<ResponseBody> {
         try {
             const res = await commerceAxios.request<ResponseBody>({

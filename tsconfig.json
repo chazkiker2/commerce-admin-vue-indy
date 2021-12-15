@@ -2,7 +2,6 @@
     "compilerOptions": {
         "baseUrl": "./",
         "target": "es2018",
-        // "useDefineForClassFields": true,
         "importHelpers": true,
         "module": "esnext",
         "moduleResolution": "node",
@@ -18,7 +17,7 @@
         "paths": {
             "@/*": [
                 "src/*"
-            ],
+            ]
         },
         "types": [
             "webpack-env"

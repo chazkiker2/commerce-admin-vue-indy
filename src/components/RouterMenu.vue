@@ -28,5 +28,5 @@
 </script>
 
 <template>
-    <NMenu mode="horizontal" :options="menuOptions"></NMenu>
+    <NMenu mode="horizontal" :options="menuOptions" />
 </template>
