@@ -1,4 +1,9 @@
 import {
+    getPremiums,
+    GetPremiumsParameters,
+    getProductOffers,
+    GetProductOffersParameters,
+    GetProductOffersResponseItem,
     listPromotions,
     ListPromotionsParameters,
     ListPromotionsResponse,
@@ -9,6 +14,15 @@ import { Controllers } from "@/constants";
 import { pick } from "./helpers";
 import { deserialize } from "typescript-json-serializer";
 import axios from "axios";
+import {
+    AudienceType,
+    CountryCode,
+    CountryCodeHelper,
+    ProductOffer,
+    SubscriptionProductOffer,
+} from "@/models";
+import { resolveComponent } from "vue";
+import { Campaign } from "@/models/campaign";
 
 const { API_GATEWAY_KEY, API_GATEWAY_URL } = (window as any).env;
 
@@ -16,6 +30,13 @@ const commerceAxios = axios.create({
     baseURL: `${API_GATEWAY_URL}commerce/`,
     headers: {
         // "Access-Control-Allow-Origin": "*",
+        accept: "application/json",
+        "x-apikey": API_GATEWAY_KEY,
+    },
+});
+const mmsAxios = axios.create({
+    baseURL: `${API_GATEWAY_URL}mms/api/`,
+    headers: {
         accept: "application/json",
         "x-apikey": API_GATEWAY_KEY,
     },
@@ -134,13 +155,59 @@ class Client {
         }
     }
 
+    public readonly offers = {
+        get: (args: GetProductOffersParameters): Promise<ProductOffer[]> => {
+            return new Promise((resolve, reject) => {
+                commerceAxios
+                    .get(getProductOffers.path(), { params: args })
+                    .then(({ data }) => {
+                        const serialized = data.map((item: any) => {
+                            if ("subscriptionPeriod" in data) {
+                                return deserialize<SubscriptionProductOffer>(
+                                    item,
+                                    SubscriptionProductOffer
+                                );
+                            }
+                            return deserialize<ProductOffer>(item, ProductOffer);
+                        });
+                        resolve(serialized);
+                    })
+                    .catch(reject);
+            });
+        },
+
+        premiums: {
+            get: (args: GetPremiumsParameters): Promise<ProductOffer[]> => {
+                return new Promise((resolve, reject) => {
+                    commerceAxios
+                        .get(`${Controllers.Offers}/premiums`, { params: args })
+                        .then(({ data }) => {
+                            const serialized = data.map((item: any) => {
+                                return deserialize<ProductOffer>(item, ProductOffer);
+                            });
+                            resolve(serialized);
+                        })
+                        .catch(reject);
+                });
+            },
+        },
+    };
+
     public readonly promotions = {
         search: (
             args: SearchSolrOfferDocumentsParameters = {}
         ): Promise<SearchSolrDocsResponse> => {
+            const params = {
+                ...args,
+                audienceTypes: args.audienceTypes?.map(a => AudienceType[a]),
+            };
+            console.log({ params });
+
             return new Promise((resolve, reject) => {
                 commerceAxios
-                    .get("v1/promotions/search", { params: args })
+                    .get("v1/promotions/search", {
+                        params,
+                    })
                     .then(res => {
                         const d = deserialize<SearchSolrDocsResponse>(
                             res.data,
@@ -176,6 +243,22 @@ class Client {
                             SearchSolrDocsResponse
                         );
                         resolve(d);
+                    })
+                    .catch(reject);
+            });
+        },
+    };
+
+    public readonly campaigns = {
+        get(): Promise<any> {
+            return new Promise((resolve, reject) => {
+                mmsAxios
+                    .get("campaign-list/")
+                    .then(res => {
+                        const deserialized = res.data.map((d: any) =>
+                            deserialize<Campaign>(d, Campaign)
+                        );
+                        resolve(deserialized);
                     })
                     .catch(reject);
             });

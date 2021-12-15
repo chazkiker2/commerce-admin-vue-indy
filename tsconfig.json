@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "baseUrl": "./",
-        "target": "esnext",
+        "target": "es2018",
         // "useDefineForClassFields": true,
         "importHelpers": true,
         "module": "esnext",

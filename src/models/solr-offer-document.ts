@@ -38,7 +38,7 @@ export class SolrDoc {
     totalOrders!: number;
 
     @JsonProperty({
-        afterDeserialize: audienceTypeId => AudienceTypeHelper.fromId(audienceTypeId),
+        afterDeserialize: audienceTypeId => AudienceTypeHelper.fromString(audienceTypeId),
     })
     audienceType!: AudienceType;
 

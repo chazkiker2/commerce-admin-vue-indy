@@ -1,7 +1,14 @@
-import { Controllers } from "@/constants";
-import { AudienceType, CountryCode } from "@/models";
+import { Controllers, Endpoints } from "@/constants";
+import {
+    AudienceType,
+    CountryCode,
+    Currency,
+    ProductOffer,
+    ProductOfferType,
+    TimePeriod,
+} from "@/models";
 import { JsonProperty, Serializable } from "typescript-json-serializer";
-import { SolrDoc } from "@/models/solr-offer-document";
+import { SolrDoc } from "@/models";
 
 type SearchSolrOfferDocumentsQueryParameters = {
     searchQuery?: string;
@@ -58,28 +65,6 @@ export type ListPromotionsQueryParameters = {
 };
 
 export type ListPromotionsParameters = ListPromotionsQueryParameters;
-
-@Serializable()
-export class TimePeriod {
-    @JsonProperty()
-    id!: number;
-    @JsonProperty()
-    units!: number;
-    @JsonProperty()
-    type!: number;
-    @JsonProperty()
-    typeName!: string;
-    @JsonProperty()
-    name?: string;
-}
-
-@Serializable()
-export class Currency {
-    @JsonProperty()
-    currencyCode?: string;
-    @JsonProperty()
-    amount?: number;
-}
 
 @Serializable()
 export class Offer {
@@ -171,4 +156,35 @@ export const listPromotions = {
     queryParams: ["name", "limit", "offset"],
     bodyParams: [],
     path: (): string => `${Controllers.ClientPromotions}/list`,
+} as const;
+
+export type GetProductOffersQueryParameters = {
+    countryCode?: CountryCode;
+    productOfferType?: ProductOfferType;
+};
+
+export type GetProductOffersParameters = GetProductOffersQueryParameters;
+
+@Serializable()
+export class GetProductOffersResponseItem extends ProductOffer {}
+
+export const getProductOffers = {
+    method: "get",
+    pathParams: [],
+    queryParams: ["countryCode", "productOfferType"],
+    bodyParams: [],
+    path: (): string => Endpoints.offers.get,
+} as const;
+
+export type GetPremiumsQueryParams = {
+    countryCode?: CountryCode;
+};
+
+export type GetPremiumsParameters = GetPremiumsQueryParams;
+
+export const getPremiums = {
+    method: "get",
+    pathParams: [],
+    queryParams: ["countryCode"],
+    bodyParams: [],
 } as const;

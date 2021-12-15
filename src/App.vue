@@ -5,24 +5,23 @@
     import { RouterView } from "vue-router";
     import RouterMenu from "./components/RouterMenu.vue";
     import { NSpace } from "naive-ui";
-    import ForecastDataTable from "./components/ForecastDataTable.vue";
+    import { Routes } from "./router/routes";
 
     const routePairs = [
-        ["/", "Go to Home"],
-        ["/hello-world", "Go to About"],
+        [Routes.home, "Go to Home"],
+        [Routes.helloWorld, "Go to About"],
+        [Routes.promoSearch, "Promo Search"],
     ];
 </script>
-
 <template>
     <NSpace vertical class="app-wrapper">
         <NSpace vertical>
-            <img alt="Vue logo" src="/logo.png" />
             <RouterMenu :route-pairs="routePairs" />
         </NSpace>
 
         <RouterView />
 
-        <ForecastDataTable />
+        <!-- <ForecastDataTable />  -->
     </NSpace>
 </template>
 
